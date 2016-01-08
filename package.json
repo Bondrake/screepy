@@ -1,0 +1,19 @@
+{
+  "name": "screeps",
+  "version": "0.0.1",
+  "description": "Screeps AI",
+  "main": "main.js",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "lodash": "^3.10.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "screeps"
+  ],
+  "author": "Entropi",
+  "license": "MINE"
+}
