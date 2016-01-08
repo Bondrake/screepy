@@ -6,7 +6,7 @@ module.exports = function (creep) {
     // creep.say("to source!")
     }
   } else {
-    creep.say('drop energy!')
+    //creep.say('drop energy!')
     creep.dropEnergy(50)
   }
 }
