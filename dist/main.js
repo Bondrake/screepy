@@ -1,86 +1,95 @@
-var _ = require('lodash')
+'use strict'
 
-var req_prototypes = require('01_prototypes')
-
-var booster = require('booster')
-var builder = require('builder')
-var guard = require('guard')
-var harvester = require('harvester')
-var miner = require('miner')
-var mule = require('mule')
+// var _ = require('lodash')
+require('01_prototypes')
+var func = require('02_helpers')
+var roles = require('03_roles')
 
 if (!Memory.ref) {
   Memory.ref = {}
   Memory.ref.time_cycle = Game.time
   Memory.ref.time_slept = 0
+  Memory.ref.cycle_flip = 0
+  var time_slept = 0
+  var cycle_flip = 0
+}
+
+var update_time_slept = function () {
+  if (Memory.ref.time_slept >= 1450) {
+    Memory.ref.time_cycle = Game.time
+    Memory.ref.cycle_flip ? Memory.ref.cycle_flip = 0 : Memory.ref.cycle_flip = 1
+  }
+  Memory.ref.time_slept = Game.time - Memory.ref.time_cycle
+  time_slept = Memory.ref.time_slept
+  cycle_flip = Memory.ref.cycle_flip
+}
+
+var update_creeps = function () {
+  for (let name in Game.creeps) {
+    var creep = Game.creeps[name]
+
+    if (creep.memory.role === 'booster') roles.booster(creep)
+    if (creep.memory.role === 'builder') roles.builder(creep)
+    if (creep.memory.role === 'guard') roles.guard(creep)
+    if (creep.memory.role === 'harvester') roles.harvester(creep)
+    if (creep.memory.role === 'miner') roles.miner(creep)
+    if (creep.memory.role === 'mule') roles.mule(creep)
+  // if (creep.memory.role === 'minion')
+  }
+}
+
+var update_spawns = function () {
+  for (var spawn_name in Game.spawns) {
+    var spawn = Game.spawns[spawn_name]
+    var name_suffix = time_slept + '-' + cycle_flip
+    if (spawn.room.memory.creep_counts['miner'].length === 0 && spawn.room.memory.creep_counts['harvester'].length === 0) {
+      spawn.createCreepHarvester('Harvie') && console.log('Spawning initial harvester.')
+    }
+
+    if (time_slept === 0) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
+    if (time_slept === 100) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
+    if (time_slept === 300) spawn.createCreepBooster('Booster_' + name_suffix) && console.log('Spawning Booster')
+    if (time_slept === 500) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
+    if (time_slept === 700) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
+    if (time_slept === 800) spawn.createCreepBooster('Booster_' + name_suffix) && console.log('Spawning Booster')
+    if (time_slept === 1100) spawn.createCreepBooster('Booster_' + name_suffix) && console.log('Spawning Booster')
+    if (time_slept === 1200) {
+      if (spawn.room.find(FIND_CONSTRUCTION_SITES)) spawn.createCreepBuilder('Builder_' + name_suffix) && console.log('Spawning Builder')
+    }
+
+  }
+}
+
+var update_rooms = function () {
+  for (var key in Game.rooms) {
+    if (Memory.rooms[key].tower[0] != null) {
+      var tower = Game.getObjectById(Memory.rooms[key].tower)
+      // console.log(/*'tower: ' + tower +*/ ' repairing: ' + Game.getObjectById(Memory.rooms[key].needsRepair))
+      tower.repair(Game.getObjectById(Memory.rooms[key].needsRepair))
+    }
+  }
+}
+
+var display_stats = function () {
+  if (Game.spawns.Enesis.spawning) {
+    console.log(time_slept + '\t W18S3 energy is ' + Game.rooms['W18S3'].energyAvailable + '\t ' + Game.spawns.Enesis.spawning.name + ' completes in ' + Game.spawns.Enesis.spawning.remainingTime)
+  } else {
+    var pct = 100 * Game.rooms['W18S3'].controller.progress / Game.rooms['W18S3'].controller.progressTotal
+    console.log(time_slept + '\t W18S3 energy is ' + Game.rooms['W18S3'].energyAvailable + '\t controller progress ' + Game.rooms['W18S3'].controller.progress + ' - ' + pct.toPrecision(6) + '%')
+  }
 }
 
 module.exports.loop = function () {
-  if (Memory.ref.time_slept === 1550) {
-    Memory.ref.time_cycle = Game.time
-  }
-  Memory.ref.time_slept = Game.time - Memory.ref.time_cycle
-  var time_slept = Memory.ref.time_slept
-  console.log(time_slept)
-
-  if (time_slept === 0) {
-    Game.spawns.Enesis.createCreepMiner('Miner000')
-    console.log('Spawning Miner000')
-  }
-  if (time_slept === 100) {
-    Game.spawns.Enesis.createCreepMule('Mule100')
-  }
-  if (time_slept === 200) {
-    Game.spawns.Enesis.createCreepBuilder('Builder200')
-  }
-  if (time_slept === 300) {
-    Game.spawns.Enesis.createCreepBooster('Booster300')
+  update_time_slept()
+  if (time_slept % 10 === 0) {
+    // console.log('updating model')
+    func.garbage_collect()
+    func.update_model()
   }
 
-//  if (time_slept === 750) {
-//    Game.spawns.Enesis.createCreepMiner('Miner750')
-//  }
-  if (time_slept === 850) {
-    Game.spawns.Enesis.createCreepMule('Mule850')
-  }
-//  if (time_slept === 950) {
-//    Game.spawns.Enesis.createCreepBuilder('Builder950')
-//  }
-//  if (time_slept === 1050) {
-//    Game.spawns.Enesis.createCreepBooster('Booster1050')
-//  }
+  update_spawns()
+  update_creeps()
+  update_rooms()
 
-  for (var name in Game.creeps) {
-    var creep = Game.creeps[name]
-    //    var roomName = creep.room.name
-
-    if (creep.memory.role === 'booster') {
-      booster(creep)
-    }
-
-    if (creep.memory.role === 'builder') {
-      builder(creep)
-      // miner(creep)
-      // mule(creep)
-    }
-
-    if (creep.memory.role === 'guard') {
-      guard(creep)
-    }
-
-    if (creep.memory.role === 'harvester') {
-      harvester(creep)
-    }
-
-    if (creep.memory.role === 'miner') {
-      miner(creep)
-    }
-
-    if (creep.memory.role === 'mule') {
-      mule(creep)
-    }
-
-    if (creep.memory.role === 'minion') {
-    }
-  }
+  display_stats()
 }
