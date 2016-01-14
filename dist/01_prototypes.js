@@ -152,7 +152,7 @@ Spawn.prototype.createCreepHarvester = function (name) {
 }
 
 Spawn.prototype.createCreepMiner = function (name) {
-  return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE], name, {role: 'miner'})
+  return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE], name, {role: 'miner'})
 }
 
 Spawn.prototype.createCreepMinion = function (name) {

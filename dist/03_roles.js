@@ -3,13 +3,16 @@
 function booster (creep) {
   creep.checkEmpty()
   if (creep.fillNow()) {
-    var resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES)
+    let resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+      filter: function (object) { return creep.pos.inRangeTo(object, 10) }})
     // var sources = creep.room.find(FIND_DROPPED_RESOURCES)
     if (creep.pickup(resource) === ERR_NOT_IN_RANGE) {
       creep.moveTo(resource)
+    } else {
+      creep.moveTo(Game.flags.IdleBoosters)
     }
   } else {
-    var control = creep.room.controller
+    let control = creep.room.controller
     if (creep.upgradeController(control) === ERR_NOT_IN_RANGE) {
       creep.moveTo(control)
     // creep.moveTo(Game.flags.Flag1)
@@ -20,19 +23,19 @@ function booster (creep) {
 function builder (creep) {
   creep.checkEmpty()
   if (creep.fillNow()) {
+    let spawn = creep.nearest_spawn()
     if (creep.room.storage && creep.room.storage.store.energy > 100) {
-      var stor = creep.room.storage
+      let stor = creep.room.storage
       if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE)
         creep.moveTo(stor)
     } else if (creep.room.energyAvailable > 1000) {
-      var spawn = creep.nearest_spawn()
       if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE)
         creep.moveTo(spawn)
     } else {
       creep.moveTo(spawn)
     }
   } else {
-    var targets = creep.room.find(FIND_CONSTRUCTION_SITES)
+    let targets = creep.room.find(FIND_CONSTRUCTION_SITES)
     if (targets.length) {
       if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) creep.moveTo(targets[0])
     } else {
@@ -52,12 +55,12 @@ function guard (creep) {
 
 function harvester (creep) {
   if (creep.carry.energy < creep.carryCapacity) {
-    var sources = creep.room.find(FIND_SOURCES)
+    let sources = creep.room.find(FIND_SOURCES)
     if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
       creep.moveTo(sources[0])
     }
   } else {
-    var spawn = creep.nearest_spawn()
+    let spawn = creep.nearest_spawn()
     if (creep.transferEnergy(spawn) === ERR_NOT_IN_RANGE) {
       creep.moveTo(spawn)
     }
@@ -65,17 +68,20 @@ function harvester (creep) {
 }
 
 function miner (creep) {
-  if (creep.carry.energy < creep.carryCapacity) {
+  var pctFull = 100 * creep.carry.energy / creep.carryCapacity
+  if (pctFull < 90) {
     if (!creep.memory.target) {
       console.log('miner ' + creep.name + ' getting unoccupied source')
       creep.memory.target = _get_unoccupied_source(creep.room.name)
     }
-    var target = Game.getObjectById(creep.memory.target)
+    let target = Game.getObjectById(creep.memory.target)
     // console.log('miner target = ' + target)
 
-    var harvestResult = creep.harvest(target)
-    if (harvestResult < 0 && (harvestResult === ERR_BUSY || harvestResult === ERR_NOT_ENOUGH_RESOURCES || harvestResult === ERR_NOT_IN_RANGE)) {
+    let harvestResult = creep.harvest(target)
+    if (harvestResult < 0 && (harvestResult === ERR_BUSY || harvestResult === ERR_NOT_IN_RANGE)) {
       creep.moveTo(target)
+    } else if (harvestResult === ERR_NOT_ENOUGH_RESOURCES) {
+      creep.dropEnergy()
     } else if (harvestResult !== 0) {
       console.log('miner ' + creep.name + ' unable to harvest from ' + target + ' error is ' + harvestResult)
     }
@@ -94,6 +100,7 @@ function mule (creep) {
   //  console.log('mule ' + creep.name + ' miners length ' + miners.length)
   var resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
     filter: function (object) { return creep.pos.isNearTo(object) }})
+  var piles = creep.room.find(FIND_DROPPED_RESOURCES)
   // console.log('resource ' + resource)
   creep.checkEmpty()
   if (miners.length && creep.fillNow()) {
@@ -113,13 +120,12 @@ function mule (creep) {
     }
     creep.destination(creep.memory.target)
     if (!creep.memory.target) {
-      var piles = creep.room.find(FIND_DROPPED_RESOURCES)
       creep.destination(piles[0])
     // console.log('mule ' + creep.name + ' found pile ' + piles[0])
     }
     if (creep.destination()) {
       if (creep.pickup(resource) < 0) {
-        var moveResult = creep.moveTo(creep.destination())
+        let moveResult = creep.moveTo(creep.destination())
         if (moveResult < 0 && moveResult !== ERR_BUSY && moveResult !== ERR_NO_PATH) {
           console.log(creep.name + " can't move to " + creep.destination() + ' error is ' + moveResult)
           creep.memory.target = undefined
@@ -134,15 +140,14 @@ function mule (creep) {
       creep.moveTo(Game.flags.IdleMules)
     }
   } else if (creep.fillNow()) {
-    var piles = creep.room.find(FIND_DROPPED_RESOURCES)
     creep.destination(piles[0])
     if (creep.pickup(creep.destination()) === ERR_NOT_IN_RANGE) {
       creep.moveTo(creep.destination())
     }
   } else {
-    var deposit_target = _get_nearest_store(creep)
+    let deposit_target = _get_nearest_store(creep)
     creep.destination(deposit_target)
-    var transferResult = creep.transfer(deposit_target, RESOURCE_ENERGY)
+    let transferResult = creep.transfer(deposit_target, RESOURCE_ENERGY)
     if (transferResult === ERR_NOT_IN_RANGE) {
       creep.moveTo(creep.destination())
     } else if (transferResult !== 0) {
@@ -189,8 +194,8 @@ var _get_nearest_store = function (creep, no_storage) {
 
 var _get_unoccupied_source = function (room_name) {
   var sources = Game.rooms[room_name].find(FIND_SOURCES)
-  for (var key in sources) {
-    var attention = sources[key].has_attention('miner')
+  for (let key in sources) {
+    let attention = sources[key].has_attention('miner')
     console.log('source ' + sources[key].id + ' attention level of source: ' + attention)
     if (!attention) {
       return sources[key].id

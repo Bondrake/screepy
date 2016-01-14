@@ -15,7 +15,7 @@ if (!Memory.ref) {
 }
 
 var update_time_slept = function () {
-  if (Memory.ref.time_slept >= 1450) {
+  if (Memory.ref.time_slept >= 1440) {
     Memory.ref.time_cycle = Game.time
     Memory.ref.cycle_flip ? Memory.ref.cycle_flip = 0 : Memory.ref.cycle_flip = 1
   }
@@ -26,7 +26,7 @@ var update_time_slept = function () {
 
 var update_creeps = function () {
   for (let name in Game.creeps) {
-    var creep = Game.creeps[name]
+    let creep = Game.creeps[name]
 
     if (creep.memory.role === 'booster') roles.booster(creep)
     if (creep.memory.role === 'builder') roles.builder(creep)
@@ -40,8 +40,8 @@ var update_creeps = function () {
 
 var update_spawns = function () {
   for (var spawn_name in Game.spawns) {
-    var spawn = Game.spawns[spawn_name]
-    var name_suffix = time_slept + '-' + cycle_flip
+    let spawn = Game.spawns[spawn_name]
+    let name_suffix = time_slept + '-' + cycle_flip
     if (spawn.room.memory.creep_counts['miner'].length === 0 && spawn.room.memory.creep_counts['harvester'].length === 0) {
       spawn.createCreepHarvester('Harvie') && console.log('Spawning initial harvester.')
     }
@@ -54,16 +54,16 @@ var update_spawns = function () {
     if (time_slept === 800) spawn.createCreepBooster('Booster_' + name_suffix) && console.log('Spawning Booster')
     if (time_slept === 1100) spawn.createCreepBooster('Booster_' + name_suffix) && console.log('Spawning Booster')
     if (time_slept === 1200) {
-      if (spawn.room.find(FIND_CONSTRUCTION_SITES)) spawn.createCreepBuilder('Builder_' + name_suffix) && console.log('Spawning Builder')
+      if (spawn.room.find(FIND_CONSTRUCTION_SITES).typeof) spawn.createCreepBuilder('Builder_' + name_suffix) && console.log('Spawning Builder')
     }
 
   }
 }
 
 var update_rooms = function () {
-  for (var key in Game.rooms) {
+  for (let key in Game.rooms) {
     if (Memory.rooms[key].tower[0] != null) {
-      var tower = Game.getObjectById(Memory.rooms[key].tower)
+      let tower = Game.getObjectById(Memory.rooms[key].tower)
       // console.log(/*'tower: ' + tower +*/ ' repairing: ' + Game.getObjectById(Memory.rooms[key].needsRepair))
       tower.repair(Game.getObjectById(Memory.rooms[key].needsRepair))
     }
@@ -74,7 +74,7 @@ var display_stats = function () {
   if (Game.spawns.Enesis.spawning) {
     console.log(time_slept + '\t W18S3 energy is ' + Game.rooms['W18S3'].energyAvailable + '\t ' + Game.spawns.Enesis.spawning.name + ' completes in ' + Game.spawns.Enesis.spawning.remainingTime)
   } else {
-    var pct = 100 * Game.rooms['W18S3'].controller.progress / Game.rooms['W18S3'].controller.progressTotal
+    let pct = 100 * Game.rooms['W18S3'].controller.progress / Game.rooms['W18S3'].controller.progressTotal
     console.log(time_slept + '\t W18S3 energy is ' + Game.rooms['W18S3'].energyAvailable + '\t controller progress ' + Game.rooms['W18S3'].controller.progress + ' - ' + pct.toPrecision(6) + '%')
   }
 }
@@ -82,7 +82,6 @@ var display_stats = function () {
 module.exports.loop = function () {
   update_time_slept()
   if (time_slept % 10 === 0) {
-    // console.log('updating model')
     func.garbage_collect()
     func.update_model()
   }
