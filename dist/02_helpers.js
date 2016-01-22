@@ -6,7 +6,9 @@ var get_obj_id = function (obj) {
 
 var get_creeps = function (room_key) {
   var creep_counts = {}
-  var creep_types = ['booster', 'builder', 'guard', 'harvester', 'miner', 'mule']
+  //var creep_types = ['archer', 'booster', 'builder', 'enershifter', 'fodder', 'guard', 'harvester', 'linkling', 'miner', 'mule', 'remote_builder', 'scout', 'striker']
+  var creep_types = Object.keys(require('03_roles'))
+  //console.log(creep_types)
   for (var index in creep_types) {
     var ctype = creep_types[index]
     creep_counts[ctype] = []
@@ -48,7 +50,7 @@ var update_model = function () {
 var get_repair_target = function (structures) {
   var most_need = 1
   var struct_need = null
-  var pct = 100
+  var pct = 0
 
   for (var key in structures) {
     var structure = Game.getObjectById(structures[key])
@@ -64,6 +66,10 @@ var get_repair_target = function (structures) {
       struct_need = structure.id
     }
   }
+  let struct = Game.getObjectById(struct_need)
+  let struct_life = (100 * most_need).toPrecision(6)
+  let room_name = struct.room.name
+  console.log(room_name + '\t repair target ' + struct + '\t' + struct.pos.x + ', ' + struct.pos.y + '\t\t' + struct_life + '% - ' + struct.hits)
   return struct_need
 }
 
