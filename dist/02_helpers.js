@@ -37,13 +37,24 @@ var update_model = function () {
   for (var key in Game.rooms) {
     // only once
     if (!Memory.rooms[key])         Memory.rooms[key] = {}
-    if (!Memory.rooms[key].sources) Memory.rooms[key].sources = Game.rooms[key].find(FIND_SOURCES).map(get_obj_id)
-    if (!Memory.rooms[key].wallHP)  Memory.rooms[key].wallHP = 10000
+    if (!Memory.rooms[key].sources) {
+      Memory.rooms[key].sources = Game.rooms[key].find(FIND_SOURCES).map(get_obj_id)
+      for (source in Memory.rooms[key].sources) {
+        Memory.ref.sources[source] = key
+      }
+    }
+    if (!Memory.rooms[key].wallHP)       Memory.rooms[key].wallHP = 10000
+    if (!Memory.rooms[key].strikeStage)  Memory.rooms[key].strikeStage = 0
+    if (!Memory.rooms[key].strikeSize)   Memory.rooms[key].strikeSize = 0
 
+    Memory.rooms[key].spawns = Game.rooms[key].find(FIND_MY_SPAWNS)
+    Memory.rooms[key].has_spawn = Memory.rooms[key].spawns.length
     Memory.rooms[key].creep_counts = get_creeps(key)
-    Memory.rooms[key].tower = Game.rooms[key].find(FIND_MY_STRUCTURES, {filter: { structureType: STRUCTURE_TOWER }}).map(get_obj_id)
-    //  console.log('structures going to repair = ' + Game.rooms[key].find(FIND_STRUCTURES) )
-    Memory.rooms[key].needsRepair = get_repair_target(Game.rooms[key].find(FIND_STRUCTURES).map(get_obj_id))
+    if (Memory.rooms[key].has_spawn) {
+      Memory.rooms[key].tower = Game.rooms[key].find(FIND_MY_STRUCTURES, {filter: { structureType: STRUCTURE_TOWER }}).map(get_obj_id)
+      //  console.log('structures going to repair = ' + Game.rooms[key].find(FIND_STRUCTURES) )
+      Memory.rooms[key].needsRepair = get_repair_target(Game.rooms[key].find(FIND_STRUCTURES).map(get_obj_id))
+    }
   }
 }
 
@@ -69,7 +80,8 @@ var get_repair_target = function (structures) {
   let struct = Game.getObjectById(struct_need)
   let struct_life = (100 * most_need).toPrecision(6)
   let room_name = struct.room.name
-  console.log(room_name + '\t repair target ' + struct + '\t' + struct.pos.x + ', ' + struct.pos.y + '\t\t' + struct_life + '% - ' + struct.hits)
+  //console.log(room_name + '\t repair target ' + struct + '\t' + struct.pos.x + ', ' + struct.pos.y + '\t\t' + struct_life + '% - ' + struct.hits)
+  console.log(`${room_name} \t repair target ${struct} \t ${struct.pos.x}, ${struct.pos.y} \t ${struct_life}% - ${struct.hits}`)
   return struct_need
 }
 

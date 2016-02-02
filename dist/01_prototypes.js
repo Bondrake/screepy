@@ -73,7 +73,7 @@ Creep.prototype.nearest_spawn = function () {
   // no spawn in this room?
   if (!spawn) {
     for (var key in Game.rooms) {
-      result = Game.rooms[key].find(FIND_MY_SPAWNS)
+      let result = Game.rooms[key].find(FIND_MY_SPAWNS)
       if (result) {
         return result[0]
       }
@@ -123,6 +123,14 @@ Creep.prototype.target = function (target) {
   var tar = Game.getObjectById(this.memory.target)
   if (tar.name) this.memory.targetName = tar.name
   return (tar) ? tar : undefined
+}
+
+Creep.prototype.getExploitingRoom = function () {
+  let rname = this.room.name
+  let exploiter = Memory.rooms[rname].exploited_by
+  if (exploiter) {
+    return exploiter
+  }
 }
 
 //
@@ -186,14 +194,21 @@ Spawn.prototype.createCreepMinion = function (name) {
 Spawn.prototype.createCreepMule = function (name) {
   return this.createCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'mule'})
 }
+Spawn.prototype.createCreepMuleBig = function (name) {
+  return this.createCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'mule'})
+}
 Spawn.prototype.createCreepRemoteBuilder = function (name) {
   return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'remote_builder'})
+}
+Spawn.prototype.createCreepRepairs = function (name) {
+  return this.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], name, {role: 'repairs'})
 }
 Spawn.prototype.createCreepScout = function (name) {
   return this.createCreep([WORK, CARRY, MOVE, MOVE], name, {role: 'scout'})
 }
 Spawn.prototype.createCreepStriker = function (name) {
-  return this.createCreep([ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'striker'})
+  return this.createCreep([ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'striker'})
+//  return this.createCreep([ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'striker'})
 //  return this.createCreep([ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'striker'})
 //  return this.createCreep([RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, MOVE, MOVE, MOVE, MOVE], name, {role: 'striker'})
 }
@@ -210,6 +225,6 @@ Structure.prototype.transmitter = function () {
       if (this.id === Memory.ref.transmitters[tx]) return true
     }
   }
-  //if (this.id === '56a00e3cee7be2105ffee343') return true
+  // if (this.id === '56a00e3cee7be2105ffee343') return true
   return false
 }

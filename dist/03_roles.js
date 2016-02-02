@@ -1,5 +1,12 @@
 'use strict'
 
+/*
+ █████  ██████   ██████ ██   ██ ███████ ██████
+██   ██ ██   ██ ██      ██   ██ ██      ██   ██
+███████ ██████  ██      ███████ █████   ██████
+██   ██ ██   ██ ██      ██   ██ ██      ██   ██
+██   ██ ██   ██  ██████ ██   ██ ███████ ██   ██
+*/
 function archer (creep) {
   var enemy = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
   if (enemy) {
@@ -15,13 +22,25 @@ function archer (creep) {
   }
 }
 
+/*
+██████   ██████   ██████  ███████ ████████ ███████ ██████
+██   ██ ██    ██ ██    ██ ██         ██    ██      ██   ██
+██████  ██    ██ ██    ██ ███████    ██    █████   ██████
+██   ██ ██    ██ ██    ██      ██    ██    ██      ██   ██
+██████   ██████   ██████  ███████    ██    ███████ ██   ██
+*/
 function booster (creep) {
   creep.checkEmpty()
   if (creep.fillNow()) {
-    let resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
-      filter: function (object) { return creep.pos.inRangeTo(object, 10) }})
+    let resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES)
+    // let resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+    //  filter: function (object) { return creep.pos.inRangeTo(object, 10) }})
     // var sources = creep.room.find(FIND_DROPPED_RESOURCES)
-    if (creep.pickup(resource) === ERR_NOT_IN_RANGE) {
+    let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+      filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter())}})
+    if (link && creep.pos.inRangeTo(link, 2) && link.energy > 50) {
+      if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(link)
+    } else if (creep.pickup(resource) === ERR_NOT_IN_RANGE) {
       creep.moveTo(resource)
     } else {
       if (!creep.pos.isNearTo(Game.flags.IdleBoosters)) {
@@ -37,13 +56,32 @@ function booster (creep) {
   }
 }
 
+/*
+██████  ██    ██ ██ ██      ██████  ███████ ██████
+██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██
+██████  ██    ██ ██ ██      ██   ██ █████   ██████
+██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██
+██████   ██████  ██ ███████ ██████  ███████ ██   ██
+*/
 function builder (creep) {
   creep.checkEmpty()
   if (creep.fillNow()) {
     let spawn = creep.nearest_spawn()
+    let pile = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
+      filter: function (object) { return object.amount > 300 }})
     let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
       filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0)}})
-    if (link && link.pos.getRangeTo(creep) < spawn.pos.getRangeTo(creep)) {
+    let pile_d = pile ? pile.pos.getRangeTo(creep) : 100
+    let link_d = link ? link.pos.getRangeTo(creep) : 100
+    let spawn_d = spawn ? spawn.pos.getRangeTo(creep) : 100
+    if (pile && pile_d < link_d && pile_d < spawn_d) {
+      if (creep.pickup(pile) < 0) {
+        let moveResult = creep.moveTo(pile)
+        if (moveResult < 0 && moveResult !== ERR_BUSY && moveResult !== ERR_NO_PATH) {
+          console.log(creep.name + " can't move to " + creep.destination() + ' error is ' + moveResult)
+        }
+      }
+    } else if (link && link_d < spawn_d) {
       if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE)
         creep.moveTo(link)
     } else if (creep.room.storage && creep.room.storage.store.energy > 10000) {
@@ -68,6 +106,13 @@ function builder (creep) {
   }
 }
 
+/*
+███████ ███    ██ ███████ ██████  ███████ ██   ██ ██ ███████ ████████ ███████ ██████
+██      ████   ██ ██      ██   ██ ██      ██   ██ ██ ██         ██    ██      ██   ██
+█████   ██ ██  ██ █████   ██████  ███████ ███████ ██ █████      ██    █████   ██████
+██      ██  ██ ██ ██      ██   ██      ██ ██   ██ ██ ██         ██    ██      ██   ██
+███████ ██   ████ ███████ ██   ██ ███████ ██   ██ ██ ██         ██    ███████ ██   ██
+*/
 function enershifter (creep) {
   creep.checkEmpty()
   if (creep.fillNow()) {
@@ -98,14 +143,28 @@ function enershifter (creep) {
   }
 }
 
+/*
+███████  ██████  ██████  ██████  ███████ ██████
+██      ██    ██ ██   ██ ██   ██ ██      ██   ██
+█████   ██    ██ ██   ██ ██   ██ █████   ██████
+██      ██    ██ ██   ██ ██   ██ ██      ██   ██
+██       ██████  ██████  ██████  ███████ ██   ██
+*/
 function fodder (creep) {
   let flag = Game.flags['Stage']
-  //let flag = Game.flags['FodderRush']
-  //let flag = Game.flags['StageHome']
+  // let flag = Game.flags['FodderRush']
+  // let flag = Game.flags['StageHome']
   creep.destination(flag)
   creep.moveTo(creep.destination())
 }
 
+/*
+ ██████  ██    ██  █████  ██████  ██████
+██       ██    ██ ██   ██ ██   ██ ██   ██
+██   ███ ██    ██ ███████ ██████  ██   ██
+██    ██ ██    ██ ██   ██ ██   ██ ██   ██
+ ██████   ██████  ██   ██ ██   ██ ██████
+*/
 function guard (creep) {
   var targets = creep.room.find(FIND_HOSTILE_CREEPS)
   if (targets.length) {
@@ -115,6 +174,13 @@ function guard (creep) {
   }
 }
 
+/*
+██   ██  █████  ██████  ██    ██ ███████ ███████ ████████ ███████ ██████
+██   ██ ██   ██ ██   ██ ██    ██ ██      ██         ██    ██      ██   ██
+███████ ███████ ██████  ██    ██ █████   ███████    ██    █████   ██████
+██   ██ ██   ██ ██   ██  ██  ██  ██           ██    ██    ██      ██   ██
+██   ██ ██   ██ ██   ██   ████   ███████ ███████    ██    ███████ ██   ██
+*/
 function harvester (creep) {
   if (creep.carry.energy < creep.carryCapacity) {
     if (!creep.memory.target) {
@@ -131,13 +197,24 @@ function harvester (creep) {
       console.log('harvester ' + creep.name + ' unable to harvest from ' + target + ' error is ' + harvestResult)
     }
   } else {
-    let spawn = creep.nearest_spawn()
-    if (creep.transferEnergy(spawn) === ERR_NOT_IN_RANGE) {
-      creep.moveTo(spawn)
+    let deposit_target = _get_nearest_store(creep)
+    creep.destination(deposit_target)
+    let transferResult = creep.transfer(deposit_target, RESOURCE_ENERGY)
+    if (transferResult === ERR_NOT_IN_RANGE) {
+      creep.moveTo(creep.destination())
+    } else if (transferResult !== 0) {
+      // console.log('harvester ' + creep.name + ' transfer issue ' + transferResult)
     }
   }
 }
 
+/*
+██      ██ ███    ██ ██   ██ ██      ██ ███    ██  ██████
+██      ██ ████   ██ ██  ██  ██      ██ ████   ██ ██
+██      ██ ██ ██  ██ █████   ██      ██ ██ ██  ██ ██   ███
+██      ██ ██  ██ ██ ██  ██  ██      ██ ██  ██ ██ ██    ██
+███████ ██ ██   ████ ██   ██ ███████ ██ ██   ████  ██████
+*/
 function linkling (creep) {
   var link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
     filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter())}})
@@ -186,8 +263,17 @@ function linkling (creep) {
   }
 }
 
+/*
+███    ███ ██ ███    ██ ███████ ██████
+████  ████ ██ ████   ██ ██      ██   ██
+██ ████ ██ ██ ██ ██  ██ █████   ██████
+██  ██  ██ ██ ██  ██ ██ ██      ██   ██
+██      ██ ██ ██   ████ ███████ ██   ██
+*/
 function miner (creep) {
   var pctFull = 100 * creep.carry.energy / creep.carryCapacity
+  var link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+    filter: function (object) { return _transmitters && creep.pos.isNearTo(object) }})
   if (pctFull < 90) {
     if (!creep.memory.target) {
       console.log('miner ' + creep.name + ' getting unoccupied source')
@@ -198,11 +284,26 @@ function miner (creep) {
 
     let harvestResult = creep.harvest(target)
     if (harvestResult < 0 && (harvestResult === ERR_BUSY || harvestResult === ERR_NOT_IN_RANGE)) {
-      creep.moveTo(target)
+      creep.destination(target)
+      creep.moveTo(creep.destination())
     } else if (harvestResult === ERR_NOT_ENOUGH_RESOURCES) {
       creep.dropEnergy()
+    } else if (harvestResult === ERR_INVALID_TARGET) {
+      // console.log("invalid miner target " + target + " creep memory target " + creep.memory.target)
+      let roomholder = new RoomPosition(25, 25, Memory.ref.sources[creep.memory.target])
+      creep.destination(roomholder)
+      let move_result = creep.moveTo(roomholder)
+      // console.log('miner ' + creep.name + ' move result ' + move_result + ' destination ' + roomholder)
     } else if (harvestResult !== 0) {
       console.log('miner ' + creep.name + ' unable to harvest from ' + target + ' error is ' + harvestResult)
+    }
+  } else if (link) {
+    let transferResult = creep.transfer(link, RESOURCE_ENERGY)
+    if (transferResult === ERR_NOT_IN_RANGE) {
+      let move_result = creep.moveTo(creep.destination())
+      // console.log('miner ' + creep.name + ' move result ' + move_result)
+    } else if (transferResult !== 0) {
+      // console.log('miner ' + creep.name + ' transfer issue ' + transferResult)
     }
   } else {
     // creep.say('drop energy!')
@@ -210,12 +311,20 @@ function miner (creep) {
   }
 }
 
+/*
+███    ███ ██    ██ ██      ███████
+████  ████ ██    ██ ██      ██
+██ ████ ██ ██    ██ ██      █████
+██  ██  ██ ██    ██ ██      ██
+██      ██  ██████  ███████ ███████
+*/
 function mule (creep) {
-  var miners = creep.room.find(FIND_MY_CREEPS, {
-    filter: function (creep) {
-      return creep.memory.role === 'miner'
-    }
-  })
+  var my_spawns = creep.room.find(FIND_MY_STRUCTURES, {
+    filter: function (object) { return object.structureType === STRUCTURE_SPAWN }})
+  if (my_spawns.length) {
+    creep.memory.last_spawn = my_spawns[0].name
+  }
+  var miners = _find_miners(creep.room.name)
   //  console.log('mule ' + creep.name + ' miners length ' + miners.length)
   var resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
     filter: function (object) { return creep.pos.isNearTo(object) }})
@@ -224,11 +333,19 @@ function mule (creep) {
   creep.checkEmpty()
   if (miners.length && creep.fillNow()) {
     if (!creep.memory.target) {
+      let min_attention = 1000
+      for (let miner of miners) {
+        //console.log(JSON.stringify(miner, null, 2))
+        if (miner.memory.target === '55c34a6c5be41a0a6e80caeb') continue // leave more to boosters
+        let attention = miner.has_attention('mule')
+        if (attention < min_attention) min_attention = attention
+      }
       for (let minern of miners) {
         // console.log(miner.has_attention('mule'))
-        //        console.log('mule ' + creep.name + ' looking at miner ' + minern.name + ' with id ' + minern.id + ' attention ' + minern.has_attention('mule'))
-        if (minern.has_attention('mule') < 3) {
-          //            console.log('mule ' + creep.name + ' got to check 2 on miner ' + minern.name + ' with id ' + minern.id + ' attention ' + minern.has_attention('mule'))
+        let attention = minern.has_attention('mule')
+        // console.log('mule ' + creep.name + ' looking at miner ' + minern.name + ' with id ' + minern.id + ' attention ' + attention)
+        if (attention === min_attention && attention < 3) {
+          console.log('mule ' + creep.name + ' got to check 2 on miner ' + minern.name + ' with id ' + minern.id + ' attention ' + minern.has_attention('mule'))
           // if (minern.memory.target === '55c34a6c5be41a0a6e80caeb' && minern.has_attention('mule') >= 1)
           if (minern.memory.target === '55c34a6c5be41a0a6e80caeb') continue // leave more to boosters
           creep.memory.target = minern.id
@@ -245,7 +362,7 @@ function mule (creep) {
     if (creep.destination()) {
       if (creep.pickup(resource) < 0) {
         let moveResult = creep.moveTo(creep.destination())
-        if (moveResult < 0 && moveResult !== ERR_BUSY && moveResult !== ERR_NO_PATH) {
+        if (moveResult < 0 && moveResult !== ERR_BUSY && moveResult !== ERR_NO_PATH && moveResult !== ERR_TIRED) {
           console.log(creep.name + " can't move to " + creep.destination() + ' error is ' + moveResult)
           creep.memory.target = undefined
           creep.memory.destination = undefined
@@ -266,55 +383,235 @@ function mule (creep) {
       creep.moveTo(creep.destination())
     }
   } else {
+    creep.moveTo(new RoomPosition(25, 25, Game.rooms['W18S3']))
     let deposit_target = _get_nearest_store(creep)
+    if (!deposit_target) {
+      deposit_target = Game.spawns[creep.memory.last_spawn]
+    }
     creep.destination(deposit_target)
-    let transferResult = creep.transfer(deposit_target, RESOURCE_ENERGY)
+    // console.log("mule " + creep.name + " deposit_target " + deposit_target)
+    let transferResult = creep.transfer(creep.destination(), RESOURCE_ENERGY)
     if (transferResult === ERR_NOT_IN_RANGE) {
-      creep.moveTo(creep.destination())
+      let moveresult = creep.moveTo(creep.destination())
+      // console.log('mule ' + creep.name + ' move result ' + moveresult + ' move target ' + creep.destination())
     } else if (transferResult !== 0) {
-      // console.log('mule ' + creep.name + ' transfer issue ' + transferResult)
+      console.log('mule ' + creep.name + ' transfer issue ' + transferResult)
     }
   }
 }
 
+/*
+██████  ███████ ███    ███  ██████  ████████ ███████         ██████  ██    ██ ██ ██      ██████  ███████ ██████
+██   ██ ██      ████  ████ ██    ██    ██    ██              ██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██
+██████  █████   ██ ████ ██ ██    ██    ██    █████           ██████  ██    ██ ██ ██      ██   ██ █████   ██████
+██   ██ ██      ██  ██  ██ ██    ██    ██    ██              ██   ██ ██    ██ ██ ██      ██   ██ ██      ██   ██
+██   ██ ███████ ██      ██  ██████     ██    ███████ ███████ ██████   ██████  ██ ███████ ██████  ███████ ██   ██
+*/
 function remote_builder (creep) {
+  if (creep.pos.isNearTo(creep.room.controller)) {
+    // let result = creep.claimController(creep.room.controller)
+    // let control = creep.room.controller
+    // if (creep.upgradeController(control) === ERR_NOT_IN_RANGE) creep.moveTo(control)
+  }
   creep.checkEmpty()
   if (creep.fillNow()) {
-    if (creep.room.name === 'W18S3') {
-      var spawn = creep.nearest_spawn()
-      spawn.transferEnergy(creep)
-    } else {
-      if (!creep.memory.target) {
-        console.log('remote_builder ' + creep.name + ' getting unoccupied source')
-        creep.memory.target = _get_unoccupied_source(creep.room.name)
+    let pile = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
+      filter: function (object) { return object.amount > 300 }})
+    if (Memory.rooms[creep.room.name].spawns) {
+      let spawn = creep.nearest_spawn()
+      let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+        filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0)}})
+      let pile_d = pile ? pile.pos.getRangeTo(creep) : 100
+      let link_d = link ? link.pos.getRangeTo(creep) : 100
+      let spawn_d = spawn ? spawn.pos.getRangeTo(creep) : 100
+
+      if (pile && pile_d < link_d && pile_d < spawn_d) {
+        if (creep.pickup(pile) < 0) {
+          let moveResult = creep.moveTo(pile)
+          if (moveResult < 0 && moveResult !== ERR_BUSY && moveResult !== ERR_NO_PATH) {
+            console.log(creep.name + " can't move to " + creep.destination() + ' error is ' + moveResult)
+          }
+        }
+      } else if (link && link_d < spawn_d) {
+        if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(link)
+      } else if (creep.room.storage && creep.room.storage.store.energy > 10000) {
+        let stor = creep.room.storage
+        if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(stor)
+      } else if (creep.room.energyAvailable > 1000) {
+        if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(spawn)
       }
+    } else if (pile) {
+      if (creep.pickup(pile) < 0) creep.moveTo(pile)
+    } else if (!creep.memory.target) {
+      console.log('remote_builder ' + creep.name + ' getting unoccupied source')
+      creep.memory.target = _get_unoccupied_source(creep.room.name)
       let target = Game.getObjectById(creep.memory.target)
       // console.log('miner target = ' + target)
-
-      let harvestResult = creep.harvest(target)
-      if (harvestResult < 0 && (harvestResult === ERR_BUSY || harvestResult === ERR_NOT_IN_RANGE)) {
-        creep.moveTo(target)
-      } else if (harvestResult === ERR_NOT_ENOUGH_RESOURCES) {
-        creep.dropEnergy()
-      } else if (harvestResult !== 0) {
-        console.log('remote_builder ' + creep.name + ' unable to harvest from ' + target + ' error is ' + harvestResult)
+      let exploiter = creep.getExploitingRoom()
+      if (creep.memory.target) {
+        let harvestResult = creep.harvest(target)
+        if (harvestResult < 0 && (harvestResult === ERR_BUSY || harvestResult === ERR_NOT_IN_RANGE)) {
+          creep.moveTo(target)
+        } else if (harvestResult === ERR_NOT_ENOUGH_RESOURCES) {
+          creep.dropEnergy()
+        } else if (harvestResult !== 0) {
+          console.log('remote_builder ' + creep.name + ' unable to harvest from ' + target + ' error is ' + harvestResult)
+        }
+      } else if (exploiter) {
+        creep.moveTo(new RoomPosition(25, 25, Game.rooms[exploiter]))
+      } else {
+        console.log('remote_builder confused, not refilling ' + creep.name)
       }
     }
   } else {
-    if (creep.room.name !== 'W18S2') {
-      creep.moveTo(Game.flags['Stage'])
+    creep.memory.target = null
+    if (Game.flags.Stage && creep.room.name !== Game.flags.Stage.roomName) {
+      creep.moveTo(Game.flags.Stage)
     } else {
       let targets = creep.room.find(FIND_CONSTRUCTION_SITES)
       if (targets.length) {
         if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) creep.moveTo(targets[0])
       } else {
-        creep.moveTo(Game.flags.IdleBuilders)
+        creep.moveTo(Game.flags.Stage)
       }
     }
   }
 }
 
+/*
+██████  ███████ ███    ███  ██████  ████████ ███████         ██████  ███████ ██████   █████  ██ ██████  ███████
+██   ██ ██      ████  ████ ██    ██    ██    ██              ██   ██ ██      ██   ██ ██   ██ ██ ██   ██ ██
+██████  █████   ██ ████ ██ ██    ██    ██    █████           ██████  █████   ██████  ███████ ██ ██████  ███████
+██   ██ ██      ██  ██  ██ ██    ██    ██    ██              ██   ██ ██      ██      ██   ██ ██ ██   ██      ██
+██   ██ ███████ ██      ██  ██████     ██    ███████ ███████ ██   ██ ███████ ██      ██   ██ ██ ██   ██ ███████
+*/
+function remote_repairs (creep) {
+  creep.checkEmpty()
+  if (creep.fillNow()) {
+    let pile = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
+      filter: function (object) { return object.amount > 300 }})
+    if (Memory.rooms[creep.room.name].spawns) {
+      let spawn = creep.nearest_spawn()
+      let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+        filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0)}})
+      let pile_d = pile ? pile.pos.getRangeTo(creep) : 100
+      let link_d = link ? link.pos.getRangeTo(creep) : 100
+      let spawn_d = spawn ? spawn.pos.getRangeTo(creep) : 100
+
+      if (pile && pile_d < link_d && pile_d < spawn_d) {
+        if (creep.pickup(pile) < 0) {
+          let moveResult = creep.moveTo(pile)
+          if (moveResult < 0 && moveResult !== ERR_BUSY && moveResult !== ERR_NO_PATH) {
+            console.log(creep.name + " can't move to " + creep.destination() + ' error is ' + moveResult)
+          }
+        }
+      } else if (link && link_d < spawn_d) {
+        if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(link)
+      } else if (creep.room.storage && creep.room.storage.store.energy > 10000) {
+        let stor = creep.room.storage
+        if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(stor)
+      } else if (creep.room.energyAvailable > 1000) {
+        if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(spawn)
+      }
+    } else if (pile) {
+      if (creep.pickup(pile) < 0) creep.moveTo(pile)
+    } else if (!creep.memory.target) {
+      console.log('remote_repairs ' + creep.name + ' getting unoccupied source')
+      creep.memory.target = _get_unoccupied_source(creep.room.name)
+      let target = Game.getObjectById(creep.memory.target)
+      // console.log('miner target = ' + target)
+      let exploiter = creep.getExploitingRoom()
+      if (creep.memory.target) {
+        let harvestResult = creep.harvest(target)
+        if (harvestResult < 0 && (harvestResult === ERR_BUSY || harvestResult === ERR_NOT_IN_RANGE)) {
+          creep.moveTo(target)
+        } else if (harvestResult === ERR_NOT_ENOUGH_RESOURCES) {
+          creep.dropEnergy()
+        } else if (harvestResult !== 0) {
+          console.log('remote_repairs ' + creep.name + ' unable to harvest from ' + target + ' error is ' + harvestResult)
+        }
+      } else if (exploiter) {
+        creep.moveTo(new RoomPosition(25, 25, Game.rooms[exploiter]))
+      } else {
+        console.log('remote_repairs confused, not refilling ' + creep.name)
+      }
+    }
+  } else {
+    creep.memory.target = null
+    if (Game.flags.Stage && creep.room.name !== Game.flags.Stage.roomName) {
+      creep.moveTo(Game.flags.Stage)
+    } else {
+      let targets = creep.room.find(FIND_CONSTRUCTION_SITES)
+      if (targets.length) {
+        if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) creep.moveTo(targets[0])
+      } else {
+        creep.moveTo(Game.flags.Stage)
+      }
+    }
+  }
+}
+
+/*
+██████  ███████ ██████   █████  ██ ██████  ███████
+██   ██ ██      ██   ██ ██   ██ ██ ██   ██ ██
+██████  █████   ██████  ███████ ██ ██████  ███████
+██   ██ ██      ██      ██   ██ ██ ██   ██      ██
+██   ██ ███████ ██      ██   ██ ██ ██   ██ ███████
+*/
+function repairs (creep) {
+  creep.checkEmpty()
+  if (creep.fillNow()) {
+    let spawn = creep.nearest_spawn()
+    let pile = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
+      filter: function (object) { return object.amount > 300 }})
+    let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+      filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0)}})
+    let pile_d = pile ? pile.pos.getRangeTo(creep) : 100
+    let link_d = link ? link.pos.getRangeTo(creep) : 100
+    let spawn_d = spawn ? spawn.pos.getRangeTo(creep) : 100
+    if (pile && pile_d < link_d && pile_d < spawn_d) {
+      if (creep.pickup(pile) < 0) {
+        let moveResult = creep.moveTo(pile)
+        if (moveResult < 0 && moveResult !== ERR_BUSY && moveResult !== ERR_NO_PATH) {
+          console.log(creep.name + " can't move to " + creep.destination() + ' error is ' + moveResult)
+        }
+      }
+    } else if (link && link_d < spawn_d) {
+      if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE)
+        creep.moveTo(link)
+    } else if (creep.room.storage && creep.room.storage.store.energy > 10000) {
+      let stor = creep.room.storage
+      if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE)
+        creep.moveTo(stor)
+    } else if (creep.room.energyAvailable > 1000) {
+      if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE)
+        creep.moveTo(spawn)
+    } else {
+      if (!creep.pos.isNearTo(spawn)) {
+        creep.moveTo(spawn)
+      }
+    }
+  } else {
+    let target = Game.getObjectById(Memory.rooms[creep.room.name].needsRepair)
+    if (target) {
+      if (creep.repair(target) === ERR_NOT_IN_RANGE) creep.moveTo(target)
+    } else {
+      // creep.moveTo(Game.flags.IdleBuilders)
+    }
+  }
+}
+
+/*
+███████  ██████  ██████  ██    ██ ████████
+██      ██      ██    ██ ██    ██    ██
+███████ ██      ██    ██ ██    ██    ██
+     ██ ██      ██    ██ ██    ██    ██
+███████  ██████  ██████   ██████     ██
+*/
 function scout (creep) {
+  if (creep.pos.isNearTo(creep.room.controller)) {
+    // let result = creep.claimController(creep.room.controller)
+  }
   if (!creep.destination()) {
     // dont double up scouts
     var scouts = Memory.rooms['W18S3'].creep_counts['scout']
@@ -335,7 +632,7 @@ function scout (creep) {
       if (!other_scouts) {
         creep.say('no other scouts')
         creep.destination(flag)
-      } else if (other_scouts.indexOf(flag.id) == -1) {
+      } else if (other_scouts.indexOf(flag.id) === -1) {
         creep.destination(flag)
       }
     }
@@ -344,16 +641,23 @@ function scout (creep) {
   }
 }
 
+/*
+███████ ████████ ██████  ██ ██   ██ ███████ ██████
+██         ██    ██   ██ ██ ██  ██  ██      ██   ██
+███████    ██    ██████  ██ █████   █████   ██████
+     ██    ██    ██   ██ ██ ██  ██  ██      ██   ██
+███████    ██    ██   ██ ██ ██   ██ ███████ ██   ██
+*/
 function striker (creep) {
-  //var tower = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } } )
-  //var tower = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES)
-  //var tower = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
-  //var tower = creep.pos.findClosestByRange(FIND_STRUCTURES)
+  // var tower = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } } )
+  // var tower = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES)
+  // var tower = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES)
+  // var tower = creep.pos.findClosestByRange(FIND_STRUCTURES)
   var tower = null
-  //console.log(tower)
+  // console.log(tower)
   if (creep.pos.isNearTo(creep.room.controller)) {
-    //let result = creep.claimController(creep.room.controller)
-    //console.log('claim controller ' + result)
+    // let result = creep.claimController(creep.room.controller)
+    // console.log('claim controller ' + result)
   }
   if (tower) {
     let attack_result = creep.attack(tower)
@@ -364,18 +668,35 @@ function striker (creep) {
       console.log(attack_result)
     }
   } else {
-    let target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
-    //if (creep.name === 'Strike1') target = Game.getObjectById('567d3dfa3ce4857d1df37f55')
-    //let target = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES)
-    //let target = null
-    //let target = Game.getObjectById('569fc6618b8d3c5f3bc5dcfa')
-    //console.log('striker target ' + target)
+    var target = null
+    // let target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
+    // if (creep.room.name === 'W19S4') target = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES)
+    // if (creep.room.name === 'W17S3') target = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, { filter: { structureType: STRUCTURE_EXTENSION } } )
+    // if (creep.room.name === 'W17S3') target = creep.pos.findClosestByRange(FIND_STRUCTURES)
+    if (creep.room.name === 'W17S3') {
+      target = Game.getObjectById('56aff7fc433e62063f622eaf') || Game.getObjectById('56aff924add5caf73e774824') ||
+      Game.getObjectById('56b00030971f8346710a6ec7') || Game.getObjectById('56b0002ed73d803071f7e401') || Game.getObjectById('56b0002a621eef3d7124c09d') ||
+      creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS) ||
+      // creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_WALL }}) ||
+      creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES)
+    }
+    if (creep.room.name === 'W18S4') target = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_WALL }})
+    //if (creep.name === 'Strike4') target = Game.getObjectById('567d3b4688bfe6441d7ce531')
+//    if (creep.room.name === 'W18S4') {
+//      target = Game.getObjectById('5685be199519ea8b01a2493f') ||
+//        Game.getObjectById('5682d3133e4671c477fb3410') ||
+//        creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
+//    }
+    // let target = Game.getObjectById('569fc6618b8d3c5f3bc5dcfa')
+    // console.log('striker target ' + target)
     if (target) {
-      if (creep.attack(target) === ERR_NOT_IN_RANGE) {
+      let attack_result = creep.attack(target)
+      // console.log('striker attack result - ' + attack_result)
+      if (attack_result === ERR_NOT_IN_RANGE) {
         creep.moveTo(target)
       }
     } else {
-      //let flag = Game.flags['StrikeStage']
+      // let flag = Game.flags['StrikeStage']
       let flag = Game.flags['Strike']
       creep.destination(flag)
       creep.moveTo(creep.destination())
@@ -383,6 +704,13 @@ function striker (creep) {
   }
 }
 
+/*
+███████ ██ ███    ██ ██████      ███████ ████████ ██    ██ ███████ ███████
+██      ██ ████   ██ ██   ██     ██         ██    ██    ██ ██      ██
+█████   ██ ██ ██  ██ ██   ██     ███████    ██    ██    ██ █████   █████
+██      ██ ██  ██ ██ ██   ██          ██    ██    ██    ██ ██      ██
+██      ██ ██   ████ ██████      ███████    ██     ██████  ██      ██
+*/
 //  Filters for find operations
 // var _stored_energy = function (object) {
 //   return ((object.energy > 10) || (object.structureType === STRUCTURE_STORAGE && object.store.energy > 10))
@@ -422,17 +750,57 @@ var _get_nearest_store = function (creep, no_storage) {
 var _get_unoccupied_source = function (room_name) {
   var sources = Game.rooms[room_name].find(FIND_SOURCES)
   for (let key in sources) {
-    let attention = sources[key].has_attention('miner')
+    let attention = sources[key].has_attention('miner') || sources[key].has_attention('remote_builder')
     console.log('source ' + sources[key].id + ' attention level of source: ' + attention)
     if (!attention) {
       return sources[key].id
-    } else if (sources[key].id === '55c34a6c5be41a0a6e80caec' && attention < 3) { // W18S3 3 man source
-      return sources[key].id
+    // } else if (sources[key].id === '55c34a6b5be41a0a6e80c339' && attention < 3) {
+    //   return sources[key].id
+    }
+  }
+  if (Memory.rooms[room_name].exploits) {
+    for (let room of Memory.rooms[room_name].exploits) {
+      console.log("get unoc room " + room + " from " + room_name)
+      let sources = Memory.rooms[room].sources
+      for (let key in sources) {
+        var attention = 0
+        let source = Game.getObjectById(sources[key])
+        console.log("source key " + sources[key] + " source " + source)
+        if (source) {
+          attention = source.has_attention('miner')
+          console.log('source ' + sources[key] + ' attention level of source: ' + attention)
+        } else {
+          return sources[key]
+        }
+        if (!attention) {
+          return sources[key]
+        }
+      }
     }
   }
 }
 
+var _find_miners = function (room_name) {
+  var all_miners = []
+  let room_miners = Game.rooms[room_name].find(FIND_MY_CREEPS, {
+    filter: function (creep) { return creep.memory.role === 'miner' }})
+  if (room_miners.length) all_miners.push(room_miners)
+  // console.log("room " + room_name + " exploits " + Memory.rooms[room_name].exploits)
+  if (Memory.rooms[room_name].exploits) {
+    for (let room of Memory.rooms[room_name].exploits) {
+      if (Game.rooms[room]) {
+        let room_miners = Game.rooms[room].find(FIND_MY_CREEPS, {
+          filter: function (creep) { return creep.memory.role === 'miner' }})
+        if (room_miners.length) all_miners.push(room_miners)
+      }
+    }
+  }
+  let flattened_all_miners = [].concat.apply([], all_miners)
+  return flattened_all_miners
+}
+
 module.exports = {
+  archer: archer,
   booster: booster,
   builder: builder,
   enershifter: enershifter,
@@ -443,6 +811,7 @@ module.exports = {
   miner: miner,
   mule: mule,
   remote_builder: remote_builder,
+  repairs: repairs,
   scout: scout,
   striker: striker
 }
