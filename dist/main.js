@@ -17,7 +17,8 @@ if (!Memory.ref) {
 }
 
 Memory.ref.transmitters = ['56a00e3cee7be2105ffee343', '56ac79eddf60560f66673a72', '56b01ddbe655a9fc3e1bf31a']
-Memory.rooms['W18S3'].exploits = ['W17S3']
+Memory.rooms['W18S3'].exploits = ['W17S3', 'W19S3']
+Memory.rooms['W19S4'].exploits = ['W18S4', 'W17S4']
 for (let exploiter in Memory.rooms) {
   if (Memory.rooms[exploiter].exploits) {
     for (let exploited of Memory.rooms[exploiter].exploits) {
@@ -55,22 +56,26 @@ var update_spawns = function () {
     if (spawn.name === 'Enesis') {
       if (time_slept === 0) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
       if (time_slept === 75) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
-      if (time_slept === 150) spawn.createCreepBooster('Booster_' + name_suffix) && console.log('Spawning Booster')
-      if (time_slept === 225) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
-      if (time_slept === 300) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
-      if (time_slept === 375) spawn.createCreepBooster('Booster_' + name_suffix) && console.log('Spawning Booster')
-      if (time_slept === 450) spawn.createCreepBooster('Booster_' + name_suffix) && console.log('Spawning Booster')
-      if (time_slept === 525) spawn.createCreepEnershifter('Enershifter_' + name_suffix) && console.log('Spawning Enershifter')
-      if (time_slept === 600) spawn.createCreepLinkling('Linkling_' + name_suffix) && console.log('Spawning Linkling')
-      if (time_slept === 900) {
+      if (time_slept === 150) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
+      if (time_slept === 225) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
+      if (time_slept === 300) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
+      if (time_slept === 375) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
+      if (time_slept === 450) spawn.createCreepEnershifter('Enershifter_' + name_suffix) && console.log('Spawning Enershifter')
+      if (time_slept === 525) spawn.createCreepLinkling('Linkling_' + name_suffix) && console.log('Spawning Linkling')
+      if (time_slept === 600) {
         if (spawn.room.find(FIND_CONSTRUCTION_SITES).length) spawn.createCreepBuilder('Builder_' + name_suffix) && console.log('Spawning Builder')
       }
     }
     if (spawn.name === 'Enesis2') {
       if (time_slept === 50) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
-      if (time_slept === 125) spawn.createCreepMuleBig('Mule_' + name_suffix) && console.log('Spawning Mule')
-      if (time_slept === 275) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
-      if (time_slept === 350) spawn.createCreepMuleBig('Mule_' + name_suffix) && console.log('Spawning Mule')
+      if (time_slept === 150) spawn.createCreepRemoteMule('RemoteMule_' + name_suffix) && console.log('Spawning RemoteMule')
+      if (time_slept === 250) spawn.createCreepRemoteMule('RemoteMule_' + name_suffix) && console.log('Spawning RemoteMule')
+      if (time_slept === 350) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
+      if (time_slept === 450) spawn.createCreepRemoteMule('RemoteMule_' + name_suffix) && console.log('Spawning RemoteMule')
+      if (time_slept === 550) spawn.createCreepRemoteMule('RemoteMule_' + name_suffix) && console.log('Spawning RemoteMule')
+      if (time_slept === 650) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
+      if (time_slept === 750) spawn.createCreepRemoteMule('RemoteMule_' + name_suffix) && console.log('Spawning RemoteMule')
+      if (time_slept === 850) spawn.createCreepRemoteMule('RemoteMule_' + name_suffix) && console.log('Spawning RemoteMule')
     }
     if (spawn.name === 'Enesis2' && Memory.rooms[spawn.room.name].strikeStage) {
       for (let i = 0; i < Memory.rooms[spawn.room.name].strikeSize; i++) {
@@ -84,17 +89,22 @@ var update_spawns = function () {
     if (spawn.name === 'Entwo') {
       if (time_slept === 0) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
       if (time_slept === 75) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
-      if (time_slept === 150) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
-      if (time_slept === 225) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
-      if (time_slept === 300) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
-      if (time_slept === 375) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
-      if (time_slept === 450) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
-      if (time_slept === 525) spawn.createCreepEnershifter('Enershifter_' + name_suffix) && console.log('Spawning Enershifter')
+      if (time_slept === 150) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
+      if (time_slept === 225) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
+      if (time_slept === 300) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
+      if (time_slept === 375) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
+      if (time_slept === 450) spawn.createCreepEnershifter('Enershifter_' + name_suffix) && console.log('Spawning Enershifter')
+      if (time_slept === 525) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
+      if (time_slept === 600) spawn.createCreep([WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], 'RemoteMule_' + name_suffix, {role: 'remote_mule'}) && console.log('Spawning Remote Mule')
+      if (time_slept === 675) spawn.createCreep([WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], 'RemoteMule_' + name_suffix, {role: 'remote_mule'}) && console.log('Spawning Remote Mule')
+      if (time_slept === 750) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
+      if (time_slept === 825) spawn.createCreep([WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], 'RemoteMule_' + name_suffix, {role: 'remote_mule'}) && console.log('Spawning Remote Mule')
+      if (time_slept === 900) spawn.createCreep([WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], 'RemoteMule_' + name_suffix, {role: 'remote_mule'}) && console.log('Spawning Remote Mule')
       // if (time_slept === 375) spawn.createCreep([WORK, CARRY, CARRY, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
       // if (time_slept === 450) spawn.createCreep([WORK, CARRY, CARRY, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
       // if (time_slept === 525) spawn.createCreepEnershifter('Enershifter_' + name_suffix) && console.log('Spawning Enershifter')
       // if (time_slept === 600) spawn.createCreepLinkling('Linkling_' + name_suffix) && console.log('Spawning Linkling')
-      if (time_slept === 700) {
+      if (time_slept === 975) {
         if (spawn.room.find(FIND_CONSTRUCTION_SITES).length) spawn.createCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], 'Builder_' + name_suffix, {role: 'builder'}) && console.log('Spawning Builder')
       }
     }

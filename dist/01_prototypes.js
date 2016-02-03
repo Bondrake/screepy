@@ -31,7 +31,8 @@ var has_attention = function (creepType, global) {
         if (creep.memory.target === this.id && creep.ticksToLive > 100) {
           attendants += 1
           // console.log('creepType ' + creepType + ' creep.memory.role ' + creep.memory.role + ' creep.memory.name ' + creep.name)
-          mem[creep.memory.role] = creep.name
+          mem[creep.memory.role] = mem[creep.memory.role] || []
+          mem[creep.memory.role].push(creep.name)
           // console.log(JSON.stringify(mem, null, 2))
         }
       }
@@ -171,7 +172,7 @@ Spawn.prototype.createCreepBooster = function (name) {
   return this.createCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], name, {role: 'booster'})
 }
 Spawn.prototype.createCreepEnershifter = function (name) {
-  return this.createCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], name, {role: 'enershifter'})
+  return this.createCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], name, {role: 'enershifter'})
 }
 Spawn.prototype.createCreepFodder = function (name) {
   return this.createCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], name, {role: 'fodder'})
@@ -186,7 +187,7 @@ Spawn.prototype.createCreepLinkling = function (name) {
   return this.createCreep([CARRY, MOVE], name, {role: 'linkling'})
 }
 Spawn.prototype.createCreepMiner = function (name) {
-  return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE], name, {role: 'miner'})
+  return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], name, {role: 'miner'})
 }
 Spawn.prototype.createCreepMinion = function (name) {
   return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'minion'})
@@ -194,11 +195,15 @@ Spawn.prototype.createCreepMinion = function (name) {
 Spawn.prototype.createCreepMule = function (name) {
   return this.createCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'mule'})
 }
-Spawn.prototype.createCreepMuleBig = function (name) {
-  return this.createCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'mule'})
+Spawn.prototype.createCreepRemoteMule = function (name) {
+  return this.createCreep([WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'remote_mule'})
 }
 Spawn.prototype.createCreepRemoteBuilder = function (name) {
   return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'remote_builder'})
+}
+Spawn.prototype.createCreepRemoteRepairs = function (name) {
+  //return this.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], name, {role: 'remote_repairs'})
+  return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'remote_repairs'})
 }
 Spawn.prototype.createCreepRepairs = function (name) {
   return this.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], name, {role: 'repairs'})
