@@ -58,8 +58,8 @@ var update_spawns = function () {
       if (time_slept === 75) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
       if (time_slept === 150) spawn.createCreepMiner('Miner_' + name_suffix) && console.log('Spawning Miner')
       if (time_slept === 225) spawn.createCreepMule('Mule_' + name_suffix) && console.log('Spawning Mule')
-      if (time_slept === 300) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
-      if (time_slept === 375) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
+      if (time_slept === 300) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
+      if (time_slept === 375) spawn.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], 'Booster_' + name_suffix, {role: 'booster'}) && console.log('Spawning Booster')
       if (time_slept === 450) spawn.createCreepEnershifter('Enershifter_' + name_suffix) && console.log('Spawning Enershifter')
       if (time_slept === 525) spawn.createCreepLinkling('Linkling_' + name_suffix) && console.log('Spawning Linkling')
       if (time_slept === 600) {
