@@ -4,12 +4,12 @@ var getCreepsOfRole = function (creepType, room) {
   // get creeps we care about
   if (room) {
     // we have this in memory
-    var creeps = Memory.rooms[room].creep_counts[creepType]
+    let creeps = Memory.rooms[room].creep_counts[creepType]
     return creeps
   }
 
-  var creeps = []
-  for (key in Game.creeps) {
+  let creeps = []
+  for (let key in Game.creeps) {
     if (Game.creeps[key].memory.role === creepType) {
       creeps.push(Game.creeps[key].id)
     }
@@ -33,7 +33,7 @@ var has_attention = function (creepType, global) {
           // console.log('creepType ' + creepType + ' creep.memory.role ' + creep.memory.role + ' creep.memory.name ' + creep.name)
           mem[creep.memory.role] = mem[creep.memory.role] || []
           mem[creep.memory.role].push(creep.name)
-          // console.log(JSON.stringify(mem, null, 2))
+        // console.log(JSON.stringify(mem, null, 2))
         }
       }
     }
@@ -140,14 +140,14 @@ Creep.prototype.getExploitingRoom = function () {
 
 RoomPosition.prototype.getDirectionAway = function (object) {
   let opposite = function (direction) {
-    if      (direction === TOP)          return BOTTOM;
-    else if (direction === TOP_RIGHT)    return BOTTOM_LEFT;
-    else if (direction === RIGHT)        return LEFT;
-    else if (direction === BOTTOM_RIGHT) return TOP_LEFT;
-    else if (direction === BOTTOM)       return TOP;
-    else if (direction === BOTTOM_LEFT)  return TOP_RIGHT;
-    else if (direction === LEFT)         return RIGHT;
-    else                                 return BOTTOM_RIGHT;
+    if (direction === TOP) return BOTTOM
+    else if (direction === TOP_RIGHT) return BOTTOM_LEFT
+    else if (direction === RIGHT) return LEFT
+    else if (direction === BOTTOM_RIGHT) return TOP_LEFT
+    else if (direction === BOTTOM) return TOP
+    else if (direction === BOTTOM_LEFT) return TOP_RIGHT
+    else if (direction === LEFT) return RIGHT
+    else return BOTTOM_RIGHT
   }
   return opposite(this.getDirectionTo(object))
 }
@@ -162,7 +162,7 @@ Source.prototype.has_attention = has_attention
 //  SPAWN
 //
 Spawn.prototype.createCreepArcher = function (name) {
-//  return this.createCreep([RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, MOVE, MOVE, MOVE, MOVE], name, {role: 'archer'})
+  //  return this.createCreep([RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, MOVE, MOVE, MOVE, MOVE], name, {role: 'archer'})
   return this.createCreep([RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'archer'})
 }
 Spawn.prototype.createCreepBuilder = function (name) {
@@ -202,7 +202,7 @@ Spawn.prototype.createCreepRemoteBuilder = function (name) {
   return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'remote_builder'})
 }
 Spawn.prototype.createCreepRemoteRepairs = function (name) {
-  //return this.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], name, {role: 'remote_repairs'})
+  // return this.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], name, {role: 'remote_repairs'})
   return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'remote_repairs'})
 }
 Spawn.prototype.createCreepRepairs = function (name) {

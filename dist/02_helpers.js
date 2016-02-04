@@ -6,9 +6,9 @@ var get_obj_id = function (obj) {
 
 var get_creeps = function (room_key) {
   var creep_counts = {}
-  //var creep_types = ['archer', 'booster', 'builder', 'enershifter', 'fodder', 'guard', 'harvester', 'linkling', 'miner', 'mule', 'remote_builder', 'scout', 'striker']
+  // var creep_types = ['archer', 'booster', 'builder', 'enershifter', 'fodder', 'guard', 'harvester', 'linkling', 'miner', 'mule', 'remote_builder', 'scout', 'striker']
   var creep_types = Object.keys(require('03_roles'))
-  //console.log(creep_types)
+  // console.log(creep_types)
   for (var index in creep_types) {
     var ctype = creep_types[index]
     creep_counts[ctype] = []
@@ -43,16 +43,16 @@ var get_creeps = function (room_key) {
 var update_model = function () {
   for (var key in Game.rooms) {
     // only once
-    if (!Memory.rooms[key])         Memory.rooms[key] = {}
+    if (!Memory.rooms[key]) Memory.rooms[key] = {}
     if (!Memory.rooms[key].sources) {
       Memory.rooms[key].sources = Game.rooms[key].find(FIND_SOURCES).map(get_obj_id)
       for (let source of Memory.rooms[key].sources) {
         Memory.ref.sources[source] = key
       }
     }
-    if (!Memory.rooms[key].wallHP)       Memory.rooms[key].wallHP = 10000
-    if (!Memory.rooms[key].strikeStage)  Memory.rooms[key].strikeStage = 0
-    if (!Memory.rooms[key].strikeSize)   Memory.rooms[key].strikeSize = 0
+    if (!Memory.rooms[key].wallHP) Memory.rooms[key].wallHP = 10000
+    if (!Memory.rooms[key].strikeStage) Memory.rooms[key].strikeStage = 0
+    if (!Memory.rooms[key].strikeSize) Memory.rooms[key].strikeSize = 0
 
     if (Game.rooms[key].memory) {
       Memory.rooms[key].tower = Game.rooms[key].find(FIND_MY_STRUCTURES, {filter: { structureType: STRUCTURE_TOWER }}).map(get_obj_id)

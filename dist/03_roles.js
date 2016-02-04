@@ -35,12 +35,17 @@ function archer (creep) {
 function booster (creep) {
   creep.checkEmpty()
   if (creep.fillNow()) {
+    let stor = creep.room.storage
+    if (stor && stor.energy > 10000 && creep.pos.inRangeTo(stor, 4)) {
+      if (creep.isNearTo(stor)) stor.transferEnergy(creep)
+      creep.moveTo(stor)
+    }
     let resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES)
     // let resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
     //  filter: function (object) { return creep.pos.inRangeTo(object, 10) }})
     // var sources = creep.room.find(FIND_DROPPED_RESOURCES)
     let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-      filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter())}})
+      filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter()) }})
     if (link && creep.pos.inRangeTo(link, 2) && link.energy > 0) {
       if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(link)
       return
@@ -77,7 +82,7 @@ function builder (creep) {
     let pile = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
       filter: function (object) { return object.amount > 300 }})
     let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-      filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0)}})
+      filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0) }})
     let pile_d = pile ? pile.pos.getRangeTo(creep) : 100
     let link_d = link ? link.pos.getRangeTo(creep) : 100
     let spawn_d = spawn ? spawn.pos.getRangeTo(creep) : 100
@@ -90,18 +95,15 @@ function builder (creep) {
         return
       }
     } else if (link && link_d < spawn_d) {
-      if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE)
-        creep.moveTo(link)
-        return
+      if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(link)
+      return
     } else if (creep.room.storage && creep.room.storage.store.energy > 10000) {
       let stor = creep.room.storage
-      if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE)
-        creep.moveTo(stor)
-        return
+      if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(stor)
+      return
     } else if (creep.room.energyAvailable > 1000) {
-      if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE)
-        creep.moveTo(spawn)
-        return
+      if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(spawn)
+      return
     } else {
       if (!creep.pos.isNearTo(spawn)) {
         creep.moveTo(spawn)
@@ -238,24 +240,21 @@ function harvester (creep) {
 */
 function linkling (creep) {
   var link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-    filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter())}})
+    filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter()) }})
   let spawn = creep.nearest_spawn()
   creep.checkEmpty()
   if (creep.fillNow()) {
     creep.memory.target = null
     if (link && link.pos.getRangeTo(creep) < spawn.pos.getRangeTo(creep) && link.energy > 0) {
-      if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE)
-        creep.moveTo(link)
-        return
+      if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(link)
+      return
     } else if (creep.room.storage && creep.room.storage.store.energy > 1000) {
       let stor = creep.room.storage
-      if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE)
-        creep.moveTo(stor)
-        return
+      if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(stor)
+      return
     } else if (creep.room.energyAvailable > 1000) {
-      if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE)
-        creep.moveTo(spawn)
-        return
+      if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(spawn)
+      return
     } else {
       if (!creep.pos.isNearTo(spawn)) {
         creep.moveTo(spawn)
@@ -263,15 +262,15 @@ function linkling (creep) {
       }
     }
   } else {
-    //var towers = creep.pos.findInRange(FIND_MY_STRUCTURES, 4, { filter: { structureType: STRUCTURE_TOWER } } )
-    var towers = creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } } )
+    // var towers = creep.pos.findInRange(FIND_MY_STRUCTURES, 4, { filter: { structureType: STRUCTURE_TOWER } } )
+    var towers = creep.room.find(FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } })
     if (towers.length) {
-      if(!creep.memory.target) {
+      if (!creep.memory.target) {
         for (let tower of towers) {
-          //if (tower.id === '56941937254d91ca66b28b27') continue
+          // if (tower.id === '56941937254d91ca66b28b27') continue
           if (tower.has_attention('linkling') < 1 && tower.energy < tower.energyCapacity - 50) {
             creep.memory.target = tower.id
-            //console.log('linkling ' + creep.name + ' - attaching to tower ' + tower.id + ' - tower attenders = ' + tower.has_attention('linkling'))
+            // console.log('linkling ' + creep.name + ' - attaching to tower ' + tower.id + ' - tower attenders = ' + tower.has_attention('linkling'))
             break
           }
         }
@@ -337,7 +336,7 @@ function miner (creep) {
     } else if (transferResult !== 0) {
       creep.dropEnergy()
       return
-      // console.log('miner ' + creep.name + ' transfer issue ' + transferResult)
+    // console.log('miner ' + creep.name + ' transfer issue ' + transferResult)
     }
   } else {
     // creep.say('drop energy!')
@@ -370,7 +369,7 @@ function mule (creep) {
     if (!creep.memory.target) {
       let min_attention = 1000
       for (let miner of miners) {
-        //console.log(JSON.stringify(miner, null, 2))
+        // console.log(JSON.stringify(miner, null, 2))
         if (miner.memory.target === '55c34a6c5be41a0a6e80caeb' || miner.memory.target === '55c34a6b5be41a0a6e80c338') continue // leave more to boosters
         let attention = miner.has_attention('mule')
         if (attention < min_attention) min_attention = attention
@@ -466,7 +465,7 @@ function remote_mule (creep) {
     if (!creep.memory.target) {
       let min_attention = 1000
       for (let miner of miners) {
-        //console.log(JSON.stringify(miner, null, 2))
+        // console.log(JSON.stringify(miner, null, 2))
         if (miner.memory.target === '55c34a6c5be41a0a6e80caeb' || miner.memory.target === '55c34a6b5be41a0a6e80c338') continue // leave more to boosters
         let attention = miner.has_attention('remote_mule')
         if (attention < min_attention) min_attention = attention
@@ -518,11 +517,11 @@ function remote_mule (creep) {
     }
   } else {
     let repairs = creep.pos.findInRange(FIND_STRUCTURES, 1, {
-      filter: function (object) { return (object.structureType === STRUCTURE_ROAD && object.hits < object.hitsMax)}})
+      filter: function (object) { return (object.structureType === STRUCTURE_ROAD && object.hits < object.hitsMax) }})
     if (repairs.length) {
       let repairt = creep.pos.findClosestByPath(repairs)
       let repair_result = creep.repair(repairt)
-      //return
+    // return
     }
     // creep.moveTo(new RoomPosition(25, 25, Game.rooms['W18S3']))
     let deposit_target = _get_nearest_store(creep)
@@ -565,7 +564,7 @@ function remote_builder (creep) {
     if (Memory.rooms[creep.room.name].spawns && Memory.rooms[creep.room.name].spawns.length) {
       let spawn = creep.nearest_spawn()
       let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-        filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0)}})
+        filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0) }})
       let pile_d = pile ? pile.pos.getRangeTo(creep) : 100
       let link_d = link ? link.pos.getRangeTo(creep) : 100
       let spawn_d = spawn ? spawn.pos.getRangeTo(creep) : 100
@@ -649,7 +648,7 @@ function remote_repairs (creep) {
     if (Memory.rooms[creep.room.name].spawns) {
       let spawn = creep.nearest_spawn()
       let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-        filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0)}})
+        filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0) }})
       let pile_d = pile ? pile.pos.getRangeTo(creep) : 100
       let link_d = link ? link.pos.getRangeTo(creep) : 100
       let spawn_d = spawn ? spawn.pos.getRangeTo(creep) : 100
@@ -721,7 +720,7 @@ function repairs (creep) {
     let pile = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
       filter: function (object) { return object.amount > 300 }})
     let link = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-      filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0)}})
+      filter: function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy > 0) }})
     let pile_d = pile ? pile.pos.getRangeTo(creep) : 100
     let link_d = link ? link.pos.getRangeTo(creep) : 100
     let spawn_d = spawn ? spawn.pos.getRangeTo(creep) : 100
@@ -733,15 +732,12 @@ function repairs (creep) {
         }
       }
     } else if (link && link_d < spawn_d) {
-      if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE)
-        creep.moveTo(link)
+      if (link.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(link)
     } else if (creep.room.storage && creep.room.storage.store.energy > 10000) {
       let stor = creep.room.storage
-      if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE)
-        creep.moveTo(stor)
+      if (stor.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(stor)
     } else if (creep.room.energyAvailable > 1000) {
-      if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE)
-        creep.moveTo(spawn)
+      if (spawn.transferEnergy(creep) === ERR_NOT_IN_RANGE) creep.moveTo(spawn)
     } else {
       if (!creep.pos.isNearTo(spawn)) {
         creep.moveTo(spawn)
@@ -782,7 +778,7 @@ function scout (creep) {
     }
     // GET ROOMS TAGGED FOR SCOUTING
     let flag = Game.flags['Enew']
-      // if there are no friendly units in that room get flag as target
+    // if there are no friendly units in that room get flag as target
     if (!Game.rooms[flag.pos.roomName]) {
       // if no other scouts own that room
       if (!other_scouts) {
@@ -836,13 +832,13 @@ function striker (creep) {
       // creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_WALL }}) ||
       creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES)
     }
-    if (creep.room.name === 'W18S4') target = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_WALL }})
-    //if (creep.name === 'Strike4') target = Game.getObjectById('567d3b4688bfe6441d7ce531')
-//    if (creep.room.name === 'W18S4') {
-//      target = Game.getObjectById('5685be199519ea8b01a2493f') ||
-//        Game.getObjectById('5682d3133e4671c477fb3410') ||
-//        creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
-//    }
+    if (creep.room.name === 'W18S4') target = creep.pos.findClosestByRange(FIND_STRUCTURES, { filter: { structureType: STRUCTURE_WALL } })
+    // if (creep.name === 'Strike4') target = Game.getObjectById('567d3b4688bfe6441d7ce531')
+    //    if (creep.room.name === 'W18S4') {
+    //      target = Game.getObjectById('5685be199519ea8b01a2493f') ||
+    //        Game.getObjectById('5682d3133e4671c477fb3410') ||
+    //        creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
+    //    }
     // let target = Game.getObjectById('569fc6618b8d3c5f3bc5dcfa')
     // console.log('striker target ' + target)
     if (target) {
@@ -875,7 +871,7 @@ var _storage_spawn_extension = function (object) {
   return ((object.energy < object.energyCapacity) && (object.structureType === STRUCTURE_EXTENSION || object.structureType === STRUCTURE_SPAWN))
 }
 var _transmitters = function (object) {
-   return (object.structureType === STRUCTURE_LINK && object.transmitter() && object.energy < object.energyCapacity)
+  return (object.structureType === STRUCTURE_LINK && object.transmitter() && object.energy < object.energyCapacity)
 }
 var _storage_other = function (object) {
   return ((object.energy < object.energyCapacity - 50) && object.structureType !== STRUCTURE_LINK)
@@ -883,9 +879,9 @@ var _storage_other = function (object) {
 var _storage_structure = function (object) {
   return (object.structureType === STRUCTURE_STORAGE && object.store.energy < object.storeCapacity - 50)
 }
-var _storage_struct = function (object) {
-  return (object.structureType === STRUCTURE_STORAGE)
-}
+// var _storage_struct = function (object) {
+//  return (object.structureType === STRUCTURE_STORAGE)
+// }
 var _needs_repair = function (object) {
   return ((object.structureType !== STRUCTURE_WALL && object.structureType !== STRUCTURE_RAMPART && (object.hits < object.hitsMax)) ||
   (object.structureType === STRUCTURE_RAMPART && (object.hits < Memory.rooms[object.room.name].wallHP)) ||
@@ -916,12 +912,12 @@ var _get_unoccupied_source = function (room_name) {
   }
   if (Memory.rooms[room_name].exploits) {
     for (let room of Memory.rooms[room_name].exploits) {
-      console.log("get unoc room " + room + " from " + room_name)
+      console.log('get unoc room ' + room + ' from ' + room_name)
       let sources = Memory.rooms[room].sources
       for (let key in sources) {
         var attention = 0
         let source = Game.getObjectById(sources[key])
-        console.log("source key " + sources[key] + " source " + source)
+        console.log('source key ' + sources[key] + ' source ' + source)
         if (source) {
           attention = source.has_attention('miner')
           console.log('source ' + sources[key] + ' attention level of source: ' + attention)
@@ -942,7 +938,7 @@ var _find_miners = function (room_name, exploited) {
     let room_miners = Game.rooms[room_name].find(FIND_MY_CREEPS, {
       filter: function (creep) { return creep.memory.role === 'miner' }})
     if (room_miners.length) all_miners.push(room_miners)
-    // console.log("room " + room_name + " exploits " + Memory.rooms[room_name].exploits)
+  // console.log("room " + room_name + " exploits " + Memory.rooms[room_name].exploits)
   }
   if (exploited) {
     if (Memory.rooms[room_name].exploits) {

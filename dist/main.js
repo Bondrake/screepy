@@ -1,7 +1,7 @@
 'use strict'
 
 // var _ = require('lodash')
-var profiler = require('x_profiler');
+var profiler = require('x_profiler')
 require('01_prototypes')
 var func = require('02_helpers')
 var roles = require('03_roles')
@@ -40,7 +40,7 @@ var update_time_slept = function () {
 var update_creeps = function () {
   for (let key in Game.creeps) {
     let creep = Game.creeps[key]
-    //console.log(`update creeps - key = ${key} - creep = ${creep} - role = ${creep.memory.role}`)
+    // console.log(`update creeps - key = ${key} - creep = ${creep} - role = ${creep.memory.role}`)
     roles[creep.memory.role](creep)
   }
 }
@@ -138,12 +138,12 @@ var update_rooms = function () {
     var _receivers = function (object) { return (object.structureType === STRUCTURE_LINK && !object.transmitter() && object.energy < object.energyCapacity) }
     var _most_depleted_receiver = function () {
       let rx_energies = {}
-      let rx_links = Game.rooms[key].find(FIND_MY_STRUCTURES, { filter: _receivers } )
+      let rx_links = Game.rooms[key].find(FIND_MY_STRUCTURES, { filter: _receivers })
       for (let key in rx_links) { rx_energies[rx_links[key].id] = rx_links[key].energy }
-      let emptiest = Object.keys(rx_energies).sort(function(a,b){return rx_energies[a]-rx_energies[b]})
+      let emptiest = Object.keys(rx_energies).sort(function (a, b) { return rx_energies[a] - rx_energies[b] })
       return Game.getObjectById(emptiest[0])
     }
-    let tx_links = Game.rooms[key].find(FIND_MY_STRUCTURES, { filter: _transmitters } )
+    let tx_links = Game.rooms[key].find(FIND_MY_STRUCTURES, { filter: _transmitters })
     for (let tx of tx_links) {
       let rx = _most_depleted_receiver()
       tx.transferEnergy(rx)
@@ -166,10 +166,10 @@ var display_stats = function () {
   }
 }
 
-profiler.enable();
+profiler.enable()
 
 module.exports.loop = function () {
-  profiler.wrap(function() {
+  profiler.wrap(function () {
     update_time_slept()
     if (time_slept % 10 === 0) {
       func.garbage_collect()
