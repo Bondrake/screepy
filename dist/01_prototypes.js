@@ -40,11 +40,13 @@ var has_attention = function (creepType, global) {
   }
   // console.log('object ' + this.name + ' id ' + this.id + ' attention from '); console.log(JSON.stringify(mem, null, 2))
   if (this.energyCapacity === undefined) {
+    this.memory.last_attention = this.memory.attention || []
     this.memory.attention = mem
+    this.say('attnmem')
+  }
   //  } else {
   //    Memory.ref.sources = {}
   //    Memory.ref.sources[this.id].attention = mem
-  }
   return attendants
 }
 
@@ -156,7 +158,7 @@ RoomPosition.prototype.getDirectionAway = function (object) {
 // SOURCE
 //
 
-Source.prototype.has_attention = has_attention
+Source.prototype.has_attention = has_attention // a
 
 //
 //  SPAWN
@@ -171,8 +173,14 @@ Spawn.prototype.createCreepBuilder = function (name) {
 Spawn.prototype.createCreepBooster = function (name) {
   return this.createCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], name, {role: 'booster'})
 }
+Spawn.prototype.createCreepClaimer = function (name) {
+  return this.createCreep([CLAIM, CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE, MOVE], name, {role: 'claimer'})
+}
 Spawn.prototype.createCreepEnershifter = function (name) {
   return this.createCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], name, {role: 'enershifter'})
+}
+Spawn.prototype.createCreepEnertrain = function (name) {
+  return this.createCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'enertrain'})
 }
 Spawn.prototype.createCreepFodder = function (name) {
   return this.createCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], name, {role: 'fodder'})
@@ -182,6 +190,9 @@ Spawn.prototype.createCreepGuard = function (name) {
 }
 Spawn.prototype.createCreepHarvester = function (name) {
   return this.createCreep([WORK, CARRY, MOVE, MOVE], name, {role: 'harvester'})
+}
+Spawn.prototype.createCreepHealer = function (name) {
+  return this.createCreep([HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], name, {role: 'healer'})
 }
 Spawn.prototype.createCreepLinkling = function (name) {
   return this.createCreep([CARRY, MOVE], name, {role: 'linkling'})
@@ -222,7 +233,7 @@ Spawn.prototype.createCreepStriker = function (name) {
 // Structure
 //
 
-Structure.prototype.has_attention = has_attention
+Structure.prototype.has_attention = has_attention // a
 
 Structure.prototype.transmitter = function () {
   if (Memory.ref.transmitters.length) {

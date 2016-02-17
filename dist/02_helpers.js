@@ -34,32 +34,39 @@ var get_creeps = function (room_key) {
       min_life_name = name
     }
   }
-  // console.log(JSON.stringify(lifetimes, null, 2))
-  console.log('oldest creep ' + min_life_name + ' time to live ' + min_life)
+  if (room_key === 'W18S3') {
+    // console.log(JSON.stringify(lifetimes, null, 2))
+    console.log('oldest creep ' + min_life_name + ' time to live ' + min_life)
+  }
   Memory.ref.lifetimes = lifetimes
   return creep_counts
 }
 
 var update_model = function () {
-  for (var key in Game.rooms) {
+  for (var room_name in Game.rooms) {
     // only once
-    if (!Memory.rooms[key]) Memory.rooms[key] = {}
-    if (!Memory.rooms[key].sources) {
-      Memory.rooms[key].sources = Game.rooms[key].find(FIND_SOURCES).map(get_obj_id)
-      for (let source of Memory.rooms[key].sources) {
-        Memory.ref.sources[source] = key
+    if (!Memory.rooms[room_name]) {
+      Memory.rooms[room_name] = {
+        wallHP: 10000,
+        strikeStage: 0,
+        strikeSize: 0
       }
     }
-    if (!Memory.rooms[key].wallHP) Memory.rooms[key].wallHP = 10000
-    if (!Memory.rooms[key].strikeStage) Memory.rooms[key].strikeStage = 0
-    if (!Memory.rooms[key].strikeSize) Memory.rooms[key].strikeSize = 0
-
-    if (Game.rooms[key].memory) {
-      Memory.rooms[key].tower = Game.rooms[key].find(FIND_MY_STRUCTURES, {filter: { structureType: STRUCTURE_TOWER }}).map(get_obj_id)
-      Memory.rooms[key].needsRepair = get_repair_target(Game.rooms[key].find(FIND_STRUCTURES).map(get_obj_id))
-      Memory.rooms[key].spawns = Game.rooms[key].find(FIND_MY_SPAWNS)
-      Memory.rooms[key].has_spawn = Memory.rooms[key].spawns.length
-      Memory.rooms[key].creep_counts = get_creeps(key)
+    if (!Memory.rooms[room_name].sources) {
+      Memory.rooms[room_name].sources = Game.rooms[room_name].find(FIND_SOURCES).map(get_obj_id)
+      for (let source of Memory.rooms[room_name].sources) {
+        Memory.ref.sources[source] = room_name
+      }
+    }
+    if (!Memory.rooms[room_name].controller) {
+      Memory.rooms[room_name].controller = Game.rooms[room_name].controller
+    }
+    if (Game.rooms[room_name].memory) {
+      Memory.rooms[room_name].tower = Game.rooms[room_name].find(FIND_MY_STRUCTURES, {filter: { structureType: STRUCTURE_TOWER }}).map(get_obj_id)
+      Memory.rooms[room_name].needsRepair = get_repair_target(Game.rooms[room_name].find(FIND_STRUCTURES).map(get_obj_id))
+      Memory.rooms[room_name].spawns = Game.rooms[room_name].find(FIND_MY_SPAWNS)
+      Memory.rooms[room_name].has_spawn = Memory.rooms[room_name].spawns.length
+      Memory.rooms[room_name].creep_counts = get_creeps(room_name)
     }
   }
 }

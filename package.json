@@ -17,8 +17,8 @@
   "author": "Entropi",
   "license": "MINE",
   "standard": {
-    "globals": [ "Creep", "Game", "Memory", "RoomPosition", "Source", "Spawn",
-       "Structure", "OK",
+    "globals": [ "Controller", "Creep", "Game", "Memory", "RoomPosition",
+       "Source", "Spawn", "Structure", "OK", "CLAIM",
        "ERR_NOT_OWNER", "ERR_NO_PATH", "ERR_NAME_EXISTS", "ERR_BUSY",
        "ERR_NOT_FOUND", "ERR_NOT_ENOUGH_RESOURCES", "ERR_INVALID_TARGET",
        "ERR_FULL", "ERR_NOT_IN_RANGE", "ERR_INVALID_ARGS", "ERR_TIRED",
