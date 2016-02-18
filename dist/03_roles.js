@@ -133,7 +133,8 @@ function builder (creep) {
 */
 function claimer (creep) {
   if (!creep.memory.target) {
-    let control = _get_unoccupied_controller(creep.room.name)
+    let control = _get_least_reserved_controller(creep.room.name)
+    creep.say(control)
     // control = Game.getObjectById(control)
     // console.log(creep.name + ' targeting controller ' + control + ' in room ' + control.room.name)
     if (control) creep.memory.target = control
@@ -1047,20 +1048,33 @@ var _get_nearest_store = function (creep, no_storage) {
 //   return obj
 // }
 
-var _get_unoccupied_controller = function (room_name) {
+var _get_least_reserved_controller = function (room_name) {
   if (Memory.rooms[room_name].exploits) {
+    let exploited_controllers = []
+    for (let room of Memory.rooms[room_name].exploits) {
+      let control_id = Memory.rooms[room].controller.id
+      exploited_controllers.push(control_id)
+    }
+    let min_reserve = 100000
+    for (let controllerid of exploited_controllers) {
+      let controller = Game.getObjectById(controllerid)
+      if (!controller || controller.my) continue
+      if (!controller.reservation) return controllerid
+      if (controller.reservation) {
+        let reserve = controller.reservation.ticksToEnd
+        if (reserve < min_reserve) min_reserve = reserve
+      }
+    }
     for (let room of Memory.rooms[room_name].exploits) {
       let control_id = Memory.rooms[room].controller.id
       let controller = Game.getObjectById(control_id)
       // console.log('controller ' + controller.my + ' ' + controller.reservation)
-      console.log(room_name + ' controller ' + controller + ' mem id ' + control_id)
-      let attention = 0
-      if (controller && (controller.my || controller.reservation)) {
+      console.log(room_name + ' controller ' + controller + ' mem id ' + control_id + ' reservation ' + controller.reservation.ticksToEnd)
+      if (controller && !controller.my && controller.reservation.ticksToEnd === min_reserve) {
+        return control_id
         // attention = controller.has_attention('claimer')
-        attention = 1
         // console.log('controller ' + controller + ' attention level of controller: ' + attention)
       }
-      if (attention === 0) return control_id
     }
   }
   return undefined

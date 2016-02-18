@@ -19,7 +19,7 @@ if (!Memory.ref) {
   var cycle_flip = 0
 }
 
-Memory.ref.transmitters = ['56a00e3cee7be2105ffee343', '56ac79eddf60560f66673a72', '56b01ddbe655a9fc3e1bf31a', '56b2b309add5caf73e798ee0', '56c3fadf71fbff3e39d41997', '56c41bb31cfaf52b0e41f5ac']
+Memory.ref.transmitters = ['56a00e3cee7be2105ffee343', '56ac79eddf60560f66673a72', '56b01ddbe655a9fc3e1bf31a', '56b2b309add5caf73e798ee0', '56c3fadf71fbff3e39d41997', '56c41bb31cfaf52b0e41f5ac', '56c50b7b7c6a5a0e43ed9fc7']
 Memory.rooms['W18S3'].exploits = ['W17S3', 'W19S3']
 Memory.rooms['W16S2'].exploits = ['W15S2', 'W16S3']
 // Memory.rooms['W19S4'].exploits = ['W18S4', 'W17S4']
